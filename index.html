@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Podcast Learning App</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide-react/0.263.1/lucide-react.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +14,14 @@
     <style>
         body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
         .container { max-width: 28rem; margin: 0 auto; background: white; min-height: 100vh; }
+        .error-message { padding: 20px; text-align: center; color: red; }
     </style>
+    <script>
+        // Check browser compatibility
+        if (!window.fetch) {
+            document.write('<div class="error-message"><h2>Browser Not Supported</h2><p>Please use a modern browser like Chrome, Safari, or Firefox.</p></div>');
+        }
+    </script>
 </head>
 <body>
     <div id="root"></div>
@@ -35,6 +42,7 @@
             const [stage, setStage] = useState('input');
             const [isPlaying, setIsPlaying] = useState(false);
             const [isPaused, setIsPaused] = useState(false);
+            const [error, setError] = useState('');
             const speechSynthRef = useRef(null);
 
             const RESEARCH_PROMPT = `provide an in-depth research report on [TOPIC]. include detailed insights on: [SUBTOPICS]. i'm not aiming for expert level understanding, but rather to form my own point of view and be able to confidently discuss this topic with people who are experts. structure it with an executive summary, then detailed sections with clear headings (you can come up with the sections that make sense based on the topic). include relevant examples, case studies, and data to support key points and recommendations. if the topic is complex and requires in-depth understanding of a specific technology, use analogies to explain concepts. if there is debate on the topic, i want to see both points of view. always cite your resources. this is for someone who has worked in tech for the last 10 years and is somewhat familiar with latest developments, interested in social psychology and behavioral economics, business management, business strategy, and leadership skills. i will use this report to continue to expand my knowledge so i can always be informed with the latest trends and developments at work and to become a better business leader.`;
@@ -360,7 +368,12 @@ Do not include any other text or formatting.`
             );
         };
 
-        ReactDOM.render(React.createElement(PodcastLearningApp), document.getElementById('root'));
+        try {
+            ReactDOM.render(React.createElement(PodcastLearningApp), document.getElementById('root'));
+        } catch (err) {
+            console.error('Error loading app:', err);
+            document.getElementById('root').innerHTML = '<div class="error-message"><h2>Loading Error</h2><p>There was an error loading the app. Please refresh the page.</p><p>Error: ' + err.message + '</p></div>';
+        }
     </script>
 </body>
 </html>
